@@ -52,6 +52,10 @@ FortiGateToAbuseIPDB is a Python script that allows you to read all IPv4/IPv6 ad
      with open("fortigate_creds.dat", "w") as f:
          f.write(encoded_creds)
      ```
+     Or just:
+     echo -n 'YourAdminUserName' | base64 > /opt/FortiGateToAbuseIPDB/fortigate_creds.dat
+     echo -n 'YourPassword' | base64 >> /opt/FortiGateToAbuseIPDB/fortigate_creds.dat
+     
 3. **Set Appropriate Permissions**:
    - To ensure the security of your credentials, set the file permissions to `640`:
      ```bash
