@@ -23,16 +23,18 @@ FortiGateToAbuseIPDB is a Python script that allows you to read all IPv4/IPv6 ad
 
 #### Step 1: Create an Administrator User on FortiGate
 
-1. **Log in to your FortiGate device**: Access the FortiGate web interface using your administrator credentials.
-2. **Create a New User**:
-   - Go to **User & Device** > **User** > **User Definition**.
-   - Click **Create New** and select **Local User**.
-   - Enter a username and password for the new user.
+1. **Log in to your FortiGate device:**
+   Access the FortiGate web interface using your administrator credentials.
+
+2. **Create a New Administrator User:**
+   - Go to **System > Administrators**.
+   - Click **Create New** and select **Administrator**.
+   - Enter a username and password for the new administrator.
    - Assign the necessary permissions to read and modify the quarantine list.
-3. **Restrict Access (Optional)**:
-   - You can restrict access to this user account from a specific host where the script will be run.
-   - Go to **System** > **Administrators**.
-   - Edit the user you just created and set the trusted hosts to the IP address of the machine where the script will be executed.
+
+3. **Restrict Access (Optional):**
+   - You can restrict access to this administrator account from a specific host where the script will be run.
+   - Edit the administrator you just created and set the trusted hosts to the IP address of the machine where the script will be executed.
 
 #### Step 2: Encode the Username and Password
 
