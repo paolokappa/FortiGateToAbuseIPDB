@@ -1,12 +1,6 @@
 # FortiGateToAbuseIPDB
 FortiGateToAbuseIPDB is a Python script that allows you to read all IPv4/IPv6 addresses from the FortiGate quarantine list, forward the malicious IPs to the AbuseIPDB service, and then clear the list.
 
-Sure, I can help you create a detailed description for your GitHub project. Below is a comprehensive description of the FortiGateToAbuseIPDB script, covering its functionality, requirements, installation, and usage.
-
----
-
-## FortiGateToAbuseIPDB
-
 ### Overview
 
 **FortiGateToAbuseIPDB** is a Python script designed to automate the process of managing the quarantine list on FortiGate devices. It reads all IPv4/IPv6 addresses from the FortiGate quarantine list, forwards the malicious IPs to the AbuseIPDB service, and then clears the list. This helps in maintaining a clean quarantine list while contributing to a global database of malicious IP addresses.
@@ -25,6 +19,53 @@ Sure, I can help you create a detailed description for your GitHub project. Belo
 - FortiGate device with quarantine list access
 - AbuseIPDB API key
 
+### Setup Guide
+
+#### Step 1: Create an Administrator User on FortiGate
+
+1. **Log in to your FortiGate device**: Access the FortiGate web interface using your administrator credentials.
+2. **Create a New User**:
+   - Go to **User & Device** > **User** > **User Definition**.
+   - Click **Create New** and select **Local User**.
+   - Enter a username and password for the new user.
+   - Assign the necessary permissions to read and modify the quarantine list.
+3. **Restrict Access (Optional)**:
+   - You can restrict access to this user account from a specific host where the script will be run.
+   - Go to **System** > **Administrators**.
+   - Edit the user you just created and set the trusted hosts to the IP address of the machine where the script will be executed.
+
+#### Step 2: Encode the Username and Password
+
+1. **Create Credentials File**: Create a file named `fortigate_creds.dat` to store your FortiGate credentials.
+2. **Encode Credentials**:
+   - Use a base64 encoder to encode your username and password to avoid storing them in plain text.
+   - You can use a Python script or an online tool to encode the credentials:
+     ```python
+     import base64
+
+     username = "your_username"
+     password = "your_password"
+
+     creds = f"{username}:{password}"
+     encoded_creds = base64.b64encode(creds.encode()).decode()
+
+     with open("fortigate_creds.dat", "w") as f:
+         f.write(encoded_creds)
+     ```
+3. **Set Appropriate Permissions**:
+   - To ensure the security of your credentials, set the file permissions to `640`:
+     ```bash
+     chmod 640 fortigate_creds.dat
+     ```
+
+#### Step 3: Obtain an AbuseIPDB API Key
+
+1. **Create an AbuseIPDB Account**:
+   - Go to the [AbuseIPDB website](https://www.abuseipdb.com/) and create an account.
+2. **Generate an API Key**:
+   - Once logged in, navigate to the **API** section.
+   - Create a new API key that will be used by the script to identify who is submitting the malicious IP addresses.
+
 ### Installation
 
 1. **Clone the Repository**:
@@ -39,8 +80,12 @@ Sure, I can help you create a detailed description for your GitHub project. Belo
    pip install requests
    ```
 
-3. **Configure API Keys**:
-   Edit the script to include your AbuseIPDB API key and FortiGate device credentials.
+3. **Configure API Keys and FortiGate Details**:
+   Edit the script `fortigate_quarantine.py` to include your AbuseIPDB API key and FortiGate device details:
+   ```python
+   FORTIGATE_IP = "your_fortigate_ip_or_hostname"
+   ABUSEIPDB_API_KEY = "your_abuseipdb_api_key"
+   ```
 
 ### Usage
 
@@ -79,10 +124,36 @@ Logs are stored in `/var/log/fortigate_quarantine.log` by default. You can revie
 ### Example Log Entry
 
 ```
-2024-06-28 12:00:00 - INFO - Retrieved 5 IP addresses from the FortiGate quarantine list.
-2024-06-28 12:00:05 - INFO - Successfully reported IP 192.168.1.1 to AbuseIPDB.
-2024-06-28 12:00:06 - INFO - Successfully reported IP 2001:0db8::1 to AbuseIPDB.
-2024-06-28 12:00:07 - INFO - Cleared 5 IP addresses from the FortiGate quarantine list.
+2024-06-27 15:42:22 - ---------------------------------------
+2024-06-27 15:42:22 - Script execution started.
+2024-06-27 15:42:22 - Debug: Processing line: 192.168.1.10     Thu Jun 27 15:32:33 2024 Fri Jun 28 15:32:33 2024 IPS
+2024-06-27 15:42:22 - 192.168.1.10 IPS
+2024-06-27 15:42:23 - IP 192.168.1.10 successfully reported for IPS.
+2024-06-27 15:42:23 - AbuseIPDB Info for 192.168.1.10:
+2024-06-27 15:42:23 -  - Score: 83
+2024-06-27 15:42:23 -  - Domain: localdomain
+2024-06-27 15:42:23 -  - ISP: Local ISP
+2024-06-27 15:42:23 -  - Country: US
+2024-06-27 15:42:23 - Debug: Processing line: 192.168.1.20    Thu Jun 27 15:30:06 2024 Tue Jul  2 15:30:06 2024 IPS
+2024-06-27 15:42:23 - 192.168.1.20 IPS
+2024-06-27 15:42:23 - IP 192.168.1.20 successfully reported for IPS.
+2024-06-27 15:42:23 - AbuseIPDB Info for 192.168.1.20:
+2024-06-27 15:42:23 -  - Score: 100
+2024-06-27 15:42:23 -  - Domain: localdomain
+2024-06-27 15:42:23 -  - ISP: Local ISP
+2024-06-27 15:42:23 -  - Country: US
+2024-06-27 15:42:23 - Debug: Processing line: 192.168.1.30   Thu Jun 27 15:36:49 2024 Tue Jul  2 15:36:49 2024 IPS
+2024-06-27 15:42:23 - 192.168.1.30 IPS
+2024-06-27 15:42:24 - IP 192.168.1.30 successfully reported for IPS.
+2024-06-27 15:42:24 - AbuseIPDB Info for 192.168.1.30:
+2024-06-27 15:42:24 -  - Score: 100
+2024-06-27 15:42:24 -  - Domain: localdomain
+2024-06-27 15:42:24 -  - ISP: Local ISP
+2024-06-27 15:42:24 -  - Country: US
+2024-06-27 15:42:24 - Debug: Processing line: fortigate01 #
+2024-06-27 15:42:25 - Successfully cleared banned IPs.
+2024-06-27 15:42:25 - Found 3 IPs in the quarantine list.
+2024-06-27 15:51:12 - ---------------------------------------
 ```
 
 ### Contributing
@@ -95,4 +166,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ---
 
-With this description, users visiting your GitHub repository will have a clear and comprehensive understanding of what the FortiGateToAbuseIPDB script does, how to install and use it, and how they can contribute to the project.
+This comprehensive description includes the setup steps, installation instructions, usage guide, detailed functionality of the script, and an example log entry using local IP addresses for privacy
