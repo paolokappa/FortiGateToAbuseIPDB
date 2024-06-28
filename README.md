@@ -163,8 +163,5 @@ Contributions are welcome! Please fork the repository and submit pull requests f
 
 ### License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
----
-
-This comprehensive description includes the setup steps, installation instructions, usage guide, detailed functionality of the script, and an example log entry using local IP addresses for privacy
+This project is open source and available for anyone to modify and distribute.
+Feel free to contribute, improve, and adapt this code to suit your needs.
