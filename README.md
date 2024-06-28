@@ -78,6 +78,7 @@ FortiGateToAbuseIPDB is a Python script that allows you to read all IPv4/IPv6 ad
    Ensure you have the necessary Python libraries installed:
    ```bash
    pip install requests
+   pip install paramiko
    ```
 
 3. **Configure API Keys and FortiGate Details**:
