@@ -40,6 +40,7 @@ FortiGateToAbuseIPDB is a Python script that allows you to read all IPv4/IPv6 ad
 2. **Encode Credentials**:
    - Use a base64 encoder to encode your username and password to avoid storing them in plain text.
    - You can use a Python script or an online tool to encode the credentials:
+
      ```python
      import base64
 
@@ -62,6 +63,7 @@ Or just use those cli commands to do the same :)
      
 3. **Set Appropriate Permissions**:
    - To ensure the security of your credentials, set the file permissions to `640`:
+
      ```bash
      chmod 640 fortigate_creds.dat
      ```
