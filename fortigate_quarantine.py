@@ -74,7 +74,7 @@ def report_abuseipdb(ip, categories, comment):
         return f"Error reporting {ip} for {comment}: {response.status_code} - {response.text}"
 
 def log_event(message, log_file):
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     with open(log_file, 'a') as log:
         log.write(f"{timestamp} - {message}\n")
 
@@ -84,7 +84,6 @@ def parse_output(output, log_file):
     for line in lines[1:]:  # Skip the header
         line = line.strip()
         if line:  # Ignore empty lines
-            log_event(f"Debug: Processing line: {line}", log_file)
             parts = line.split()
             if len(parts) >= 5:  # Ensure there are enough columns
                 ip = parts[0]
@@ -99,6 +98,13 @@ def parse_output(output, log_file):
                 elif cause == 'DOS':
                     categories = '4'  # Category 4: DDoS Attack
                     comment = "FortiGate detected DOS attempt"
+                elif cause == 'Administrative':
+                    categories = '18'  # Category 18: Other
+                    comment = "FortiGate administrative action"
+                else:
+                    categories = '18'  # Category 18: Other
+                    comment = f"FortiGate detected {cause} attempt"
+                
                 report_result = report_abuseipdb(ip, categories, comment)
                 log_event(report_result, log_file)
 
