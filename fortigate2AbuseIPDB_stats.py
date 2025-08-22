@@ -19,17 +19,26 @@ from collections import defaultdict
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+# Try to import local config, fall back to defaults
+try:
+    from config_local import SMTP_CONFIG
+    smtp_config = SMTP_CONFIG
+except ImportError:
+    smtp_config = {
+        'smtp_server': 'your.smtp.server',
+        'smtp_port': 587,
+        'smtp_user': 'your-smtp-user@example.com',
+        'smtp_pass': 'your-smtp-password',
+        'sender': 'fortigate@example.com',
+        'recipient': 'security@example.com',
+    }
+
 # Configuration
 CONFIG = {
     'log_file': '/var/log/fortigate_quarantine.log',
     'fortigate_list': '/opt/FortiGateToAbuseIPDB/fortigate.list',
     'whois_cache_file': '/tmp/fortigate_whois_cache.pkl',
-    'smtp_server': 'your.smtp.server',
-    'smtp_port': 587,
-    'smtp_user': 'your-smtp-user@example.com',
-    'smtp_pass': 'your-smtp-password',
-    'sender': 'fortigate@example.com',
-    'recipient': 'security@example.com',
+    **smtp_config  # Merge SMTP config from local or defaults
 }
 
 def safe_str(text):

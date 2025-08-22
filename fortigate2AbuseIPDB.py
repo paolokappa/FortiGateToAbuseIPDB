@@ -22,13 +22,18 @@ from enum import Enum
 import logging
 from pathlib import Path
 
+# Try to import local config, fall back to defaults
+try:
+    from config_local import ABUSEIPDB_API_KEY
+except ImportError:
+    ABUSEIPDB_API_KEY = 'YOUR_ABUSEIPDB_API_KEY_HERE'
 
 # Configuration
 CONFIG = {
     'fortigate_list_path': '/opt/FortiGateToAbuseIPDB/fortigate.list',
     'creds_file_path': '/opt/FortiGateToAbuseIPDB/fortigate_creds.dat',
     'ip_whitelist_path': '/opt/FortiGateToAbuseIPDB/ip_whitelist.txt',
-    'abuseipdb_api_key': 'YOUR_ABUSEIPDB_API_KEY_HERE',  # Get your key from https://www.abuseipdb.com/
+    'abuseipdb_api_key': ABUSEIPDB_API_KEY,
     'abuseipdb_check_url': 'https://api.abuseipdb.com/api/v2/check',
     'abuseipdb_report_url': 'https://api.abuseipdb.com/api/v2/report',
     'log_file': '/var/log/fortigate_quarantine.log',
