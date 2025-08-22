@@ -1,0 +1,59 @@
+# Credentials and sensitive data
+fortigate_creds.dat
+*.dat
+
+# Configuration files with sensitive info
+fortigate.list
+
+# API keys (if stored separately)
+api_keys.txt
+*.key
+
+# Logs
+*.log
+/var/log/
+logs/
+
+# Cache files
+*.pkl
+*.cache
+__pycache__/
+*.pyc
+
+# Temporary files
+*.tmp
+/tmp/
+temp/
+
+# Backup files
+checkpoint_backup_*/
+*.tar.gz
+*.zip
+*.bak
+
+# Attack history (may contain sensitive IPs)
+attack_history.json
+
+# IDE files
+.vscode/
+*.code-workspace
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+venv/
+env/
+.env
+
+# Test files
+test_*.py
+*_test.py
+
+# Report outputs (may contain sensitive data)
+/tmp/fortigate_*
+*.html
+*.csv
+!sample_report.html

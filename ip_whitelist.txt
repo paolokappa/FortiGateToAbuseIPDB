@@ -1,0 +1,10 @@
+# IP Whitelist for FortiGate to AbuseIPDB
+# Add your public IP ranges or individual IPs that should not be reported
+# One IP or CIDR range per line
+# Lines starting with # are comments
+
+# Your public IP ranges
+185.54.80.0/22
+2a02:4460::/32
+
+# Add more IPs or ranges below as needed
