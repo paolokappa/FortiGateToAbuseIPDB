@@ -1,6 +1,7 @@
 # Credentials and sensitive data
 fortigate_creds.dat
 *.dat
+config_local.py
 
 # Configuration files with sensitive info
 fortigate.list
