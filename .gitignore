@@ -5,6 +5,7 @@ config_local.py
 
 # Configuration files with sensitive info
 fortigate.list
+ip_whitelist.txt
 
 # API keys (if stored separately)
 api_keys.txt

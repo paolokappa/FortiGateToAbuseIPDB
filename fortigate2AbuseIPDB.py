@@ -447,8 +447,15 @@ class IPParser:
                 # Validate IP
                 try:
                     ip_obj = ipaddress.ip_address(potential_ip)
-                    # Cause is typically the second field, not the last
-                    cause = parts[1] if len(parts) > 1 else "Unknown"
+                    # The cause is the last field after the date fields
+                    # Format: IP created_day created_date created_time created_year expires_day expires_date expires_time expires_year cause
+                    # We need at least 10 parts for this format (IP + 4 for created + 4 for expires + cause)
+                    if len(parts) >= 10:
+                        cause = parts[-1]  # Last field is the cause
+                    else:
+                        # Fallback for simpler formats
+                        cause = parts[-1] if len(parts) > 1 else "Unknown"
+                    
                     banned_ip = BannedIP(ip=potential_ip, cause=cause)
                     banned_ips.append(banned_ip)
                     logger.info(f"Found banned IP: {potential_ip} (cause: {cause})")

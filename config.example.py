@@ -1,6 +1,6 @@
 """
 Configuration template for FortiGate to AbuseIPDB Integration
-Copy this file to config.py and update with your values
+Copy this file to config_local.py and update with your values
 """
 
 # AbuseIPDB Configuration
