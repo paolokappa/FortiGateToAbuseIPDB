@@ -68,7 +68,7 @@ python3 /opt/FortiGateToAbuseIPDB/fortigate2AbuseIPDB_stats.py
 ## 📊 System Status
 
 - **Version**: 2.1.0
-- **Last Update**: September 2024
+- **Last Update**: September 2025
 - **Schedule**: Hourly via crontab
 - **Supported FortiGates**: 11+
 - **Compatibility**: FortiOS 7.0 - 7.4
@@ -81,4 +81,4 @@ For issues or questions:
 
 ---
 
-*Documentation generated September 2024*
+*Documentation generated September 2025*

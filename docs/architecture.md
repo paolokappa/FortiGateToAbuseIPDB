@@ -112,9 +112,9 @@ DD-MM-YYYY HH:MM:SS - [LEVEL] - Message
 
 Examples:
 ```
-13-09-2024 15:30:33 - [INFO] - Processing FortiGate: fortigate01.example.com
-13-09-2024 15:30:33 - [INFO] - Found banned IP: 1.2.3.4 (cause: DOS)
-13-09-2024 15:30:35 - [SUCCESS] - Successfully reported 1.2.3.4 to AbuseIPDB
+13-09-2025 15:30:33 - [INFO] - Processing FortiGate: fortigate01.example.com
+13-09-2025 15:30:33 - [INFO] - Found banned IP: 1.2.3.4 (cause: DOS)
+13-09-2025 15:30:35 - [SUCCESS] - Successfully reported 1.2.3.4 to AbuseIPDB
 ```
 
 ### Attack Categories
@@ -148,4 +148,4 @@ Examples:
 
 ---
 
-*Last updated: September 2024*
+*Last updated: September 2025*

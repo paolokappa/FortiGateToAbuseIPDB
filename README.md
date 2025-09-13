@@ -84,20 +84,22 @@ The heart of the suite that orchestrates all operations:
 - ✅ SSH connection management
 - ✅ Rate limit handling
 
-#### 2️⃣ **Statistics Analyzer** (`generate_stats_report.py`)
-Advanced analytics engine with multiple output formats:
+#### 2️⃣ **Statistics Analyzer** (`fortigate2AbuseIPDB_stats.py`)
+Comprehensive analytics and reporting engine:
 
-- 📊 Beautiful terminal dashboards
-- 📈 7-day attack timeline
-- 🌐 Network-based threat grouping
-- 💾 JSON export for automation
-- 📋 CSV export for Excel analysis
-- 🎨 Color-coded severity indicators
-- 📉 Trend analysis
-- 🔢 Attack categorization
+- 📊 Automated daily statistics collection
+- 📈 Attack pattern analysis and trending
+- 🌐 WHOIS data enrichment with caching
+- 📧 Professional HTML email reports
+- 📋 Attack categorization by type (DoS, IPS, Auth)
+- 🎨 Visual charts and graphs
+- 📉 Historical data tracking
+- 🔢 Top attacker identification
+- 🌍 Geographic distribution analysis
+- 💾 Automated report scheduling via cron
 
-#### 3️⃣ **Email Report Generator** (`fortigate2AbuseIPDB_stats.py`)
-Professional report generation for management:
+#### 3️⃣ **Report Generator** (`generate_stats_report.py`)
+Multi-format reporting for different audiences:
 
 - 📧 HTML email reports
 - 🎨 Embedded logo support
@@ -757,16 +759,16 @@ Total Filtered:            176 🔒
 
 📅 ATTACK TIMELINE (Last 7 Days)
 ----------------------------------------
-2024-01-15: ████████████████ 2,105 (IPS:450 DoS:155 Auth:1,500)
-2024-01-16: ████████████     1,623 (IPS:320 DoS:103 Auth:1,200)
-2024-01-17: ██████████████   1,899 (IPS:400 DoS:99 Auth:1,400)
-2024-01-18: ████████         1,102 (IPS:200 DoS:102 Auth:800)
-2024-01-19: ██████████████   1,822 (IPS:380 DoS:122 Auth:1,320)
-2024-01-20: ████████████████ 2,234 (IPS:500 DoS:134 Auth:1,600)
-2024-01-21: ████████████     1,672 (IPS:350 DoS:91 Auth:1,231)
+2025-09-07: ████████████████ 2,105 (IPS:450 DoS:155 Auth:1,500)
+2025-09-08: ████████████     1,623 (IPS:320 DoS:103 Auth:1,200)
+2025-09-09: ██████████████   1,899 (IPS:400 DoS:99 Auth:1,400)
+2025-09-10: ████████         1,102 (IPS:200 DoS:102 Auth:800)
+2025-09-11: ██████████████   1,822 (IPS:380 DoS:122 Auth:1,320)
+2025-09-12: ████████████████ 2,234 (IPS:500 DoS:134 Auth:1,600)
+2025-09-13: ████████████     1,672 (IPS:350 DoS:91 Auth:1,231)
 
 ================================================================================
-Generated: 2024-01-21 14:30:45 | Duration: 2.3s | Cached WHOIS: 892
+Generated: 2025-09-13 14:30:45 | Duration: 2.3s | Cached WHOIS: 892
 ================================================================================
 ```
 
@@ -792,7 +794,7 @@ The HTML email report includes:
 ```json
 {
   "metadata": {
-    "generated": "2024-01-21T14:30:45.123456",
+    "generated": "2025-09-13T14:30:45.123456",
     "version": "2.1.0",
     "duration_seconds": 2.3,
     "fortigates_processed": 11
@@ -840,12 +842,12 @@ The HTML email report includes:
         "dos": 310,
         "brute_force": 3007
       },
-      "last_seen": "2024-01-21T14:25:00"
+      "last_seen": "2025-09-13T14:25:00"
     }
   },
   "timeline": {
-    "2024-01-15": {"total": 2105, "ips": 450, "dos": 155, "brute_force": 1500},
-    "2024-01-16": {"total": 1623, "ips": 320, "dos": 103, "brute_force": 1200}
+    "2025-09-07": {"total": 2105, "ips": 450, "dos": 155, "brute_force": 1500},
+    "2025-09-08": {"total": 1623, "ips": 320, "dos": 103, "brute_force": 1200}
   }
 }
 ```
@@ -1224,7 +1226,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 MIT License
 
-Copyright (c) 2024 Paolo Kappa
+Copyright (c) 2025 Paolo Kappa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1274,20 +1276,20 @@ in the Software without restriction...
 
 | Component | Status | Version | Last Update |
 |-----------|--------|---------|-------------|
-| 🎯 Core Engine | ![Active](https://img.shields.io/badge/status-active-success) | 2.1.0 | Jan 2024 |
-| 📊 Stats Analyzer | ![Active](https://img.shields.io/badge/status-active-success) | 2.1.0 | Jan 2024 |
-| 📧 Email Reports | ![Active](https://img.shields.io/badge/status-active-success) | 2.1.0 | Jan 2024 |
-| 📚 Documentation | ![Complete](https://img.shields.io/badge/status-complete-blue) | 2.1.0 | Jan 2024 |
+| 🎯 Core Engine | ![Active](https://img.shields.io/badge/status-active-success) | 2.1.0 | Sep 2025 |
+| 📊 Stats Analyzer | ![Active](https://img.shields.io/badge/status-active-success) | 2.1.0 | Sep 2025 |
+| 📧 Email Reports | ![Active](https://img.shields.io/badge/status-active-success) | 2.1.0 | Sep 2025 |
+| 📚 Documentation | ![Complete](https://img.shields.io/badge/status-complete-blue) | 2.1.0 | Sep 2025 |
 
 ## 🎯 Roadmap
 
-### 🔮 Version 2.2 (Q2 2024)
+### 🔮 Version 2.2 (Q4 2025)
 - [ ] 🌐 Web dashboard
 - [ ] 📊 Real-time monitoring
 - [ ] 🔄 Bi-directional sync
 - [ ] 🤖 Machine learning for pattern detection
 
-### 🚀 Version 3.0 (Q4 2024)
+### 🚀 Version 3.0 (Q2 2026)
 - [ ] ☁️ Cloud deployment options
 - [ ] 🔗 Integration with SIEM platforms
 - [ ] 📱 Mobile app for monitoring
