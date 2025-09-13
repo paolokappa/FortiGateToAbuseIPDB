@@ -1,0 +1,105 @@
+# Configurazione raccomandata per NTP DoS Policy
+# Valori più appropriati per server NTP pubblici
+
+config firewall DoS-policy
+    edit 8
+        set name "Enhanced Protection NTP Server IPv4"
+        set comments "Optimized Protection for pool.ntp.org NTP Servers IPv4"
+        set interface "port2"
+        set srcaddr "all"
+        set dstaddr "Looking Glass IPv4" "Time Server V4"
+        set service "NTP"
+        config anomaly
+            # TCP settings (NTP usa UDP, ma manteniamo protezione TCP)
+            edit "tcp_syn_flood"
+                set status enable
+                set log enable
+                set action block
+                set quarantine attacker
+                set quarantine-expiry 1h  # Ridotto da 1d
+                set threshold 10000  # Aumentato
+            next
+            
+            # UDP settings - CRITICI PER NTP
+            edit "udp_flood"
+                set status enable
+                set log enable
+                set action block
+                set quarantine attacker
+                set quarantine-expiry 2h  # Ridotto da 1d
+                set threshold 200000  # AUMENTATO da 50000 (NTP genera molto traffico UDP)
+            next
+            edit "udp_scan"
+                set status disable  # DISABILITATO - NTP può sembrare scan
+            next
+            edit "udp_src_session"
+                set status enable
+                set log enable
+                set quarantine attacker
+                set quarantine-expiry 1h
+                set threshold 100000  # AUMENTATO da 30000
+            next
+            edit "udp_dst_session"
+                set status enable
+                set log enable
+                set quarantine attacker
+                set quarantine-expiry 1h
+                set threshold 150000  # AUMENTATO da 40000
+            next
+            
+            # ICMP settings
+            edit "icmp_flood"
+                set status enable
+                set log enable
+                set action block
+                set quarantine attacker
+                set quarantine-expiry 1h  # Ridotto
+                set threshold 5000  # Aumentato
+            next
+            
+            # IP session limits
+            edit "ip_src_session"
+                set status enable
+                set log enable
+                set quarantine attacker
+                set quarantine-expiry 1h
+                set threshold 100000  # AUMENTATO da 30000
+            next
+            edit "ip_dst_session"
+                set status enable
+                set log enable
+                set quarantine attacker
+                set quarantine-expiry 1h
+                set threshold 150000  # AUMENTATO da 40000
+            next
+        end
+    next
+end
+
+# ALTERNATIVE: Creare una policy separata più permissiva SOLO per NTP trusted servers
+config firewall DoS-policy
+    edit 9
+        set name "NTP Trusted Servers Policy"
+        set comments "Permissive policy for known NTP pool servers"
+        set interface "port2"
+        set srcaddr "all"
+        set dstaddr "pool.ntp.org-servers"  # Creare gruppo con IP pool.ntp.org
+        set service "NTP"
+        config anomaly
+            edit "udp_flood"
+                set status disable  # Disabilitato per server trusted
+            next
+            edit "udp_scan"
+                set status disable
+            next
+            edit "udp_src_session"
+                set status enable
+                set threshold 500000  # Molto alto
+            next
+            edit "udp_dst_session"
+                set status enable
+                set threshold 500000  # Molto alto
+            next
+        end
+    next
+end

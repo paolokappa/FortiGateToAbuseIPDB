@@ -361,15 +361,18 @@ class FortiGateVersion:
     COMMAND_MAP = {
         '7.0': {
             'list': 'diagnose user quarantine list',
-            'clear': 'diagnose user quarantine clear'
+            'clear': 'diagnose user quarantine clear',
+            'delete': 'diagnose user quarantine delete'
         },
         '7.4': {
             'list': 'diagnose user banned-ip list',
-            'clear': 'diagnose user banned-ip clear'
+            'clear': 'diagnose user banned-ip clear',
+            'delete': 'diagnose user banned-ip delete'
         },
         'default': {
             'list': 'diagnose user banned-ip list',
-            'clear': 'diagnose user banned-ip clear'
+            'clear': 'diagnose user banned-ip clear',
+            'delete': 'diagnose user banned-ip delete'
         }
     }
     
@@ -962,15 +965,15 @@ class FortiGateAbuseIPDB:
                     logger.warning(f"  - Whitelisted IPs (DNS servers): {whitelisted_count}")
                 
                 # Process each IP
-                self._process_banned_ips(banned_ips)
+                self._process_banned_ips(banned_ips, fortigate, commands)
             else:
                 logger.info("No banned IPs found")
-            
-            # Cleanup operations
-            cleaner = FortiGateCleaner(fortigate, self.ssh_manager)
-            cleaner.clear_quarantine(commands)
-            cleaner.clear_address_groups()
-            cleaner.clean_abuseipdb_addresses()
+                
+                # Cleanup operations - only when no banned IPs are found
+                cleaner = FortiGateCleaner(fortigate, self.ssh_manager)
+                cleaner.clear_quarantine(commands)
+                cleaner.clear_address_groups()
+                cleaner.clean_abuseipdb_addresses()
             
         except Exception as e:
             logger.error(f"Error processing FortiGate {fortigate.name}: {e}")
@@ -1024,10 +1027,11 @@ class FortiGateAbuseIPDB:
         
         return IPParser.parse_banned_ips(output)
     
-    def _process_banned_ips(self, banned_ips: List[BannedIP]) -> None:
-        """Process and report banned IPs to AbuseIPDB"""
+    def _process_banned_ips(self, banned_ips: List[BannedIP], fortigate: FortiGate, commands: dict) -> None:
+        """Process and report banned IPs to AbuseIPDB, then remove them from FortiGate"""
         # Remove duplicates
         unique_ips = list({(ip.ip, ip.cause): ip for ip in banned_ips}.values())
+        reported_ips = []
         
         for banned_ip in unique_ips:
             # Small delay between API calls to avoid rate limiting
@@ -1049,6 +1053,129 @@ class FortiGateAbuseIPDB:
                     logger.info(f"  - ISP: {data.get('isp', 'N/A')}")
                     logger.info(f"  - Country: {data.get('countryCode', 'N/A')}")
                     logger.info(f"  - Usage Type: {data.get('usageType', 'N/A')}")
+                
+                # Add to list of successfully reported IPs
+                reported_ips.append(banned_ip)
+        
+        # Remove successfully reported IPs from FortiGate
+        if reported_ips:
+            self._remove_banned_ips(fortigate, reported_ips, commands)
+    
+    def _remove_banned_ips(self, fortigate: FortiGate, ips_to_remove: List[BannedIP], commands: dict) -> None:
+        """Remove banned IPs from FortiGate after successful reporting"""
+        logger.info(f"Removing {len(ips_to_remove)} successfully reported IPs from FortiGate...")
+        
+        removed_count = 0
+        for banned_ip in ips_to_remove:
+            # 1. Remove from banned-ip list
+            if banned_ip.is_ipv6:
+                delete_command = f"{commands['delete']} src6 {banned_ip.ip}"
+            else:
+                delete_command = f"{commands['delete']} src4 {banned_ip.ip}"
+            
+            # Execute delete command
+            output, error = self.ssh_manager.execute_command(
+                fortigate.ip,
+                fortigate.username,
+                fortigate.password,
+                delete_command
+            )
+            
+            # Check if deletion was successful
+            if error and "Command fail" in error:
+                logger.warning(f"Failed to remove {banned_ip.ip} from banned list: {error}")
+            elif "deleted" in str(output).lower() or not error:
+                removed_count += 1
+                logger.info(f"Removed {banned_ip.ip} from banned list")
+                
+                # 2. Remove from firewall address group
+                self._remove_from_address_group(fortigate, banned_ip)
+                
+                # 3. Delete firewall address object
+                self._delete_firewall_address(fortigate, banned_ip)
+            else:
+                logger.warning(f"Uncertain removal status for {banned_ip.ip}")
+        
+        if removed_count > 0:
+            logger.success(f"Successfully removed {removed_count}/{len(ips_to_remove)} IPs from banned list")
+    
+    def _remove_from_address_group(self, fortigate: FortiGate, banned_ip: BannedIP) -> None:
+        """Remove IP from BOTH Banned_Admin_Failed address groups (IPv4 and IPv6)"""
+        # The automation adds IPs to BOTH groups regardless of type, so we need to remove from both
+        
+        # Remove from IPv4 group
+        commands_ipv4 = f'''config firewall addrgrp
+edit Banned_Admin_Failed
+unselect member "{banned_ip.ip}"
+end'''
+        
+        output, error = self.ssh_manager.execute_command(
+            fortigate.ip,
+            fortigate.username,
+            fortigate.password,
+            commands_ipv4
+        )
+        
+        if error and "object does not exist" not in error.lower() and "Command fail" not in error:
+            logger.warning(f"Failed to remove {banned_ip.ip} from Banned_Admin_Failed: {error}")
+        elif "object does not exist" not in error.lower():
+            logger.info(f"Removed {banned_ip.ip} from Banned_Admin_Failed (IPv4 group)")
+        
+        # Remove from IPv6 group
+        commands_ipv6 = f'''config firewall addrgrp6
+edit Banned_Admin_Failed_v6
+unselect member "{banned_ip.ip}"
+end'''
+        
+        output, error = self.ssh_manager.execute_command(
+            fortigate.ip,
+            fortigate.username,
+            fortigate.password,
+            commands_ipv6
+        )
+        
+        if error and "object does not exist" not in error.lower() and "Command fail" not in error:
+            logger.warning(f"Failed to remove {banned_ip.ip} from Banned_Admin_Failed_v6: {error}")
+        elif "object does not exist" not in error.lower():
+            logger.info(f"Removed {banned_ip.ip} from Banned_Admin_Failed_v6 (IPv6 group)")
+    
+    def _delete_firewall_address(self, fortigate: FortiGate, banned_ip: BannedIP) -> None:
+        """Delete BOTH IPv4 and IPv6 firewall address objects"""
+        # The automation creates BOTH IPv4 and IPv6 addresses for each IP, so we need to delete both
+        
+        # Delete IPv4 address object
+        commands_ipv4 = f'''config firewall address
+delete "{banned_ip.ip}"
+end'''
+        
+        output, error = self.ssh_manager.execute_command(
+            fortigate.ip,
+            fortigate.username,
+            fortigate.password,
+            commands_ipv4
+        )
+        
+        if error and "object does not exist" not in error.lower() and "Command fail" not in error:
+            logger.warning(f"Failed to delete IPv4 firewall address {banned_ip.ip}: {error}")
+        elif "object does not exist" not in error.lower():
+            logger.info(f"Deleted IPv4 firewall address object {banned_ip.ip}")
+        
+        # Delete IPv6 address object (even for IPv4 IPs, as the automation creates both)
+        commands_ipv6 = f'''config firewall address6
+delete "{banned_ip.ip}"
+end'''
+        
+        output, error = self.ssh_manager.execute_command(
+            fortigate.ip,
+            fortigate.username,
+            fortigate.password,
+            commands_ipv6
+        )
+        
+        if error and "object does not exist" not in error.lower() and "Command fail" not in error:
+            logger.warning(f"Failed to delete IPv6 firewall address {banned_ip.ip}: {error}")
+        elif "object does not exist" not in error.lower():
+            logger.info(f"Deleted IPv6 firewall address object {banned_ip.ip}")
     
     def run(self) -> None:
         """Run the main application"""
